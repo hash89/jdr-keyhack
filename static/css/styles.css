@@ -1,0 +1,134 @@
+body {
+    background-color: #1e1e1e;
+    color: #00ff00;
+    font-family: 'Courier New', Courier, monospace;
+    text-align: center;
+    margin: 0;
+    padding: 0;
+}
+
+.container {
+    padding: 50px;
+}
+
+h1 {
+    font-size: 2.5em;
+    margin-bottom: 50px;
+}
+
+.briefcase {
+    margin-bottom: 30px;
+}
+
+button {
+    background-color: #00ff00;
+    border: none;
+    padding: 15px 30px;
+    font-size: 1.2em;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+button:hover {
+    background-color: #00cc00;
+}
+
+/* Styles pour la barre de progression */
+.progress-container {
+    width: 80%;
+    background-color: #555;
+    border-radius: 25px;
+    margin: 20px auto;
+    overflow: hidden;
+}
+
+.progress-bar {
+    width: 0%;
+    height: 30px;
+    background-color: #00ff00;
+    border-radius: 25px;
+    transition: width 0.1s ease;
+}
+
+.hidden {
+    display: none;
+}
+
+/* Styles pour le message de succès */
+.success-message {
+    background-color: #002200;
+    padding: 20px;
+    border-radius: 10px;
+    margin-top: 20px; /* Ajout d'une marge supérieure */
+}
+
+.success-message h2 {
+    color: #00ff00;
+}
+
+/* Styles pour le message d'erreur */
+#error-message {
+    color: #ff4d4d; /* Rouge pour indiquer une erreur */
+    background-color: #330000; /* Fond sombre pour contraste */
+    padding: 10px;
+    margin-top: 10px;
+    border-radius: 5px;
+    font-size: 1em;
+    transition: opacity 0.3s ease;
+    opacity: 0;
+}
+
+#error-message:not(.hidden) {
+    opacity: 1;
+}
+
+p {
+    font-size: 1.1em;
+}
+
+@media (max-width: 768px) {
+    .container {
+        padding: 20px;
+    }
+
+    h1 {
+        font-size: 2em;
+        margin-bottom: 30px;
+    }
+
+    button {
+        padding: 12px 25px;
+        font-size: 1em;
+    }
+
+    .progress-container {
+        width: 100%;
+    }
+
+    p {
+        font-size: 1em;
+    }
+}
+
+@media (max-width: 480px) {
+    .container {
+        padding: 15px;
+    }
+    h1 {
+        font-size: 1.8em;
+        margin-bottom: 20px;
+    }
+    button {
+        padding: 10px 20px;
+        font-size: 0.9em;
+    }
+    .progress-container {
+        margin: 15px auto;
+    }
+    .progress-bar {
+        height: 25px;
+    }
+    p {
+        font-size: 0.95em;
+    }
+}
