@@ -1,26 +1,35 @@
-function getCookie(name) {
-    let value = "; " + document.cookie;
-    let parts = value.split("; " + name + "=");
-    if (parts.length === 2) return parts.pop().split(";").shift();
-}
-
 $(document).ready(function() {
-    // Vérifie si le cookie 'hack_success' est présent
-    if (getCookie('hack_success') === 'true') {
-        $('#message-container').html('<div class="success-message"><h2>CLEF DE CHIFFREMENT</h2></div>');
-        $('#hackButton').hide();  // Cacher le bouton si le piratage est déjà réussi
+    // Fonction pour récupérer la clé de chiffrement depuis le serveur
+    function fetchEncryptionKey() {
+        $.ajax({
+            url: '/check_hack_status',
+            type: 'GET',
+            dataType: 'json',
+            success: function(response) {
+                if (response.success) {
+                    $('#message-container').html('<div class="success-message"><h2>' + response.message + '</h2></div>');
+                    $('#hackButton').hide();  // Cacher le bouton si le piratage est déjà réussi
+                }
+            },
+            error: function() {
+                // Optionnel : gérer les erreurs de la requête AJAX
+                console.error('Erreur lors de la vérification du statut du piratage.');
+            }
+        });
     }
+
+    // Appeler la fonction au chargement de la page
+    fetchEncryptionKey();
 
     $('#hackButton').click(function() {
         // Effacer tout message d'erreur précédent
         $('#error-message').addClass('hidden').text('');
-        
+       
         // Vérifier si le navigateur supporte la géolocalisation
         if (navigator.geolocation) {
             navigator.geolocation.getCurrentPosition(function(position) {
                 const latitude = position.coords.latitude;
                 const longitude = position.coords.longitude;
-
                 // Envoyer les coordonnées au serveur pour vérification
                 $.ajax({
                     url: '/check_location',
@@ -35,7 +44,7 @@ $(document).ready(function() {
                             launchHack();
                         } else {
                             // Afficher le message d'erreur dans le conteneur
-                            $('#error-message').removeClass('hidden').text('Aucun dispositif de chiffrement détécté à proximité.');
+                            $('#error-message').removeClass('hidden').text('Aucun dispositif de chiffrement détecté à proximité.');
                         }
                     },
                     error: function() {
@@ -56,7 +65,6 @@ $(document).ready(function() {
     function launchHack() {
         $('#hackButton').prop('disabled', true);
         $('#loading').removeClass('hidden');
-
         var progress = 0;
         var totalDuration = 60000; // 60 secondes
         var intervalTime = 100; // Mise à jour toutes les 100 ms
@@ -79,35 +87,30 @@ $(document).ready(function() {
 
         var progressInterval = setInterval(function() {
             currentTime += intervalTime;
-
             // Vérifier s'il est temps de déclencher une interruption
             if (nextInterruptionIndex < interruptions.length && currentTime >= interruptions[nextInterruptionIndex]) {
                 // Appliquer l'interruption : réduire la progression de 30%
                 progress = Math.max(0, progress - 30);
                 $('#progressBar').css('width', progress + '%');
-
                 // Passer à la prochaine interruption
                 nextInterruptionIndex++;
             }
 
             // Calculer un incrément de progression non linéaire
-            // Exemple : progression plus rapide au fil du temps
             var remainingTime = totalDuration - currentTime;
             var timeFactor = 1 - (remainingTime / totalDuration); // 0 au début, 1 à la fin
             var increment = 0.5 + (timeFactor * 1.5); // Incrément entre 0.5% et 2.0%
 
             // Ajouter une petite variation aléatoire pour rendre la progression moins prévisible
             increment += (Math.random() - 0.5) * 0.5; // Variation de +/- 0.25%
-
             progress += increment;
             progress = Math.min(progress, 100); // S'assurer que la progression ne dépasse pas 100%
-
             $('#progressBar').css('width', progress + '%');
 
             if (progress >= 100) {
                 clearInterval(progressInterval);
                 $('#loading').addClass('hidden');
-                // Envoyer une requête pour définir le cookie
+                // Envoyer une requête pour définir le statut du piratage et récupérer la clé
                 $.ajax({
                     url: '/start_hack',
                     type: 'POST',
@@ -119,6 +122,7 @@ $(document).ready(function() {
                     error: function() {
                         // Afficher un message d'erreur en cas de problème lors de la finalisation
                         $('#error-message').removeClass('hidden').text('Erreur lors de la finalisation du piratage. Veuillez réessayer.');
+                        $('#hackButton').prop('disabled', false);
                     }
                 });
             }

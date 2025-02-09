@@ -1,12 +1,16 @@
 import math
-from flask import Flask, render_template, request, jsonify, make_response
+from flask import Flask, render_template, request, jsonify, make_response, session
 app = Flask(__name__)
+app.secret_key = 'votre_clé_secrète'
 
 # Coordonnées GPS autorisées (exemple)
 AUTHORIZED_COORDS = {
     'latitude': 47.3906246,   # Ex: Paris latitude
     'longitude': 0.7325133    # Ex: Paris longitude
 }
+
+ENCRYPTION_KEY = "1234-5678-ABCD-EFGH"
+message = f"NOUVELLE CLEF DE CHIFFREMENT: {ENCRYPTION_KEY}"
 
 def haversine_distance(lat1, lon1, lat2, lon2):
     """
@@ -15,7 +19,7 @@ def haversine_distance(lat1, lon1, lat2, lon2):
     """
     R = 6371  # Rayon de la Terre en kilomètres
 
-    # Convertir les latitudes et longitudes de degrés en radians
+    # Convertir les latitudes et longitudes de degrés en x²radians
     phi1 = math.radians(lat1)
     phi2 = math.radians(lat2)
     delta_phi = math.radians(lat2 - lat1)
@@ -52,13 +56,27 @@ def check_location():
 
     return jsonify({'authorized': is_authorized})
 
+@app.route('/check_hack_status', methods=['GET'])
+def check_hack_status():
+    if session.get('hack_success'):
+        return jsonify(success=True, message=message), 200
+    else:
+        return jsonify(success=False), 200
+        
 @app.route('/start_hack', methods=['POST'])
 def start_hack():
-    # Simuler le piratage en attendant côté client
-    # Une fois terminé, définir le cookie
-    resp = make_response(jsonify({'message': 'Nouvelle clef interceptée : CLEF DE CHIFFREMENT'}))
-    resp.set_cookie('hack_success', 'true', max_age=60*60*24)  # Cookie valable 1 jour
-    return resp
+    # Ici, vous pouvez ajouter la logique pour démarrer le piratage
+    # Si le piratage réussit :
+    session['hack_success'] = True
+    return jsonify(success=True, message=message), 200
+
+# @app.route('/start_hack', methods=['POST'])
+# def start_hack():
+#     # Simuler le piratage en attendant côté client
+#     # Une fois terminé, définir le cookie
+#     resp = make_response(jsonify({'message': 'Nouvelle clef interceptée : CLEF DE CHIFFREMENT'}))
+#     resp.set_cookie('hack_success', 'true', max_age=60*60*24)  # Cookie valable 1 jour
+#     return resp
 
 if __name__ == '__main__':
     app.run(debug=True)
