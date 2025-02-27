@@ -21,12 +21,16 @@ h1 {
 }
 
 button {
-    background-color: #00ff00;
-    border: none;
+    background-color: #28a745; /* Couleur verte vive */
+    color: #fff;
+    border: 2px solid #28a745;
     padding: 15px 30px;
     font-size: 1.2em;
+    font-family: 'Courier New', Courier, monospace;
+    border-radius: 8px;
     cursor: pointer;
-    transition: background-color 0.3s ease;
+    transition: background-color 0.3s ease, transform 0.2s ease, border-color 0.3s ease;
+    margin: 10px;
 }
 
 button:hover {
